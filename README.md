@@ -1,24 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Relief Chain Web is the Next.js 16 (App Router) Super Admin dashboard for reviewing organization
+registrations submitted through the Relief Chain mobile app. It shares one Supabase project with
+that app.
 
 ## Getting Started
 
-First, run the development server:
+Copy `.env.example` to `.env` and fill in your Supabase project's URL and anon/publishable key:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then run the development server:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Open [http://localhost:3000](http://localhost:3000) with your browser. The public landing page is
+at `/`; the Super Admin dashboard is behind `/login`.
+
+## Testing
+
+```bash
+npm run test
+```
+
+## Deploying to Vercel
+
+1. Push this repository to GitHub/GitLab/Bitbucket and import it into a new Vercel project (or run
+   `vercel` from the CLI). Vercel auto-detects Next.js — no custom build command is required.
+2. In the Vercel project's **Settings → Environment Variables**, add:
+   - `SUPABASE_URL` — your Supabase project URL
+   - `SUPABASE_ANON_KEY` — your Supabase anon/publishable key
+   Set these for the Production, Preview, and Development environments as needed.
+3. Deploy. `npm run build` / `next build` is run automatically by Vercel.
+
+### Database migrations
+
+This app reads from and writes to tables, RLS policies, and triggers defined in the `relief-chain`
+mobile app's `supabase/migrations` folder (a shared Supabase project). Before pointing a deployment
+at a new Supabase project, apply all of those migrations first — the dashboard will throw a runtime
+error on any table/policy that hasn't been created yet.
 
 ## Learn More
 
@@ -26,11 +49,3 @@ To learn more about Next.js, take a look at the following resources:
 
 - [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
