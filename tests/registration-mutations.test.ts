@@ -6,7 +6,7 @@ const mocks = vi.hoisted(() => ({
   revalidatePath: vi.fn(),
 }));
 
-vi.mock("server-only", () => ({}), { virtual: true });
+vi.mock("server-only", () => ({}));
 vi.mock("next/cache", () => ({
   revalidatePath: mocks.revalidatePath,
 }));

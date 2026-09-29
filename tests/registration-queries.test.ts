@@ -5,7 +5,7 @@ const mocks = vi.hoisted(() => ({
   requireSuperAdmin: vi.fn(),
 }));
 
-vi.mock("server-only", () => ({}), { virtual: true });
+vi.mock("server-only", () => ({}));
 vi.mock("@/lib/auth/require-super-admin", () => ({
   requireSuperAdmin: mocks.requireSuperAdmin,
 }));
