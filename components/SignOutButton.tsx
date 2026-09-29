@@ -2,7 +2,7 @@
 
 import { useFormStatus } from "react-dom";
 
-import { signOutAction } from "@/app/dashboard/actions";
+import { signOutAction } from "@/app/(dashboard)/actions";
 
 function SignOutSubmitButton() {
   const { pending } = useFormStatus();

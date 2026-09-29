@@ -15,6 +15,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Relief Chain",
   description: "Relief Chain coordinates disaster relief between organizations and communities.",
+  icons: {
+    icon: "/assets/Logo-Icon.svg",
+  },
 };
 
 export default function RootLayout({

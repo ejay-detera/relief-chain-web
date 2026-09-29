@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 
 import { requireSuperAdmin } from "@/lib/auth/require-super-admin";
+import { writeAuditLog } from "@/lib/platform/audit-log";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export type LoginFieldErrors = {
@@ -55,6 +56,14 @@ export async function loginAction(formData: FormData): Promise<LoginActionState>
     return { authError: "Invalid email or password." };
   }
 
-  await requireSuperAdmin();
+  const session = await requireSuperAdmin();
+  await writeAuditLog({
+    actorEmail: session.email,
+    action: "login",
+    targetName: "Super Admin Portal",
+    targetId: session.userId,
+    reason: "Administrator signed in to Super Admin Portal",
+  });
+
   redirect("/dashboard");
 }

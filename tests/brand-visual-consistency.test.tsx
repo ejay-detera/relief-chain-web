@@ -15,7 +15,7 @@ vi.mock("@/lib/auth/require-super-admin", () => ({
   requireSuperAdmin: mocks.requireSuperAdmin,
 }));
 vi.mock("next/navigation", () => ({ redirect: mocks.redirect, usePathname: () => "/dashboard" }));
-vi.mock("@/app/dashboard/actions", () => ({ signOutAction: mocks.signOutAction }));
+vi.mock("@/app/(dashboard)/actions", () => ({ signOutAction: mocks.signOutAction }));
 vi.mock("@/lib/registrations/queries", () => ({
   listRegistrations: mocks.listRegistrations,
 }));
@@ -23,8 +23,8 @@ vi.mock("@/app/login/actions", () => ({ loginAction: mocks.loginAction }));
 
 import LoginForm from "@/app/login/LoginForm";
 import LoginPage from "@/app/login/page";
-import DashboardLayout from "@/app/dashboard/layout";
-import OrganizationsPage from "@/app/dashboard/organizations/page";
+import DashboardLayout from "@/app/(dashboard)/layout";
+import OrganizationsPage from "@/app/(dashboard)/organizations/page";
 
 // Brand-only Tailwind color utility prefixes wired to the CSS variables in
 // app/globals.css (--color-primary, --color-secondary, --color-accent,

@@ -25,6 +25,7 @@ export async function updateOwnFullName(fullName: string): Promise<MutationResul
     return { error: error.message };
   }
 
+  revalidatePath("/profile");
   revalidatePath("/dashboard/profile");
   return { success: true };
 }

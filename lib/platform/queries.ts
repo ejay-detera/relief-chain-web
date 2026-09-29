@@ -1,6 +1,7 @@
 import "server-only";
 
 import { requireSuperAdmin } from "@/lib/auth/require-super-admin";
+import { createAdminSupabaseClient } from "@/lib/supabase/admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type {
   ActivityEvent,
@@ -24,9 +25,16 @@ const MONTH_LABELS = [
   "Dec",
 ];
 
+async function getClient() {
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return createAdminSupabaseClient();
+  }
+  return createServerSupabaseClient();
+}
+
 export async function getPlatformStats(): Promise<PlatformStats> {
   await requireSuperAdmin();
-  const supabase = await createServerSupabaseClient();
+  const supabase = await getClient();
 
   const [profilesResult, programsResult, registrationsResult, disbursementsResult] =
     await Promise.all([
@@ -41,11 +49,19 @@ export async function getPlatformStats(): Promise<PlatformStats> {
   const registrations = registrationsResult.data ?? [];
   const disbursements = disbursementsResult.data ?? [];
 
+  const orgProfilesCount = profiles.filter((profile) => profile.role === "lgu").length;
+  const lguCount = Math.max(orgProfilesCount, registrations.length);
+  const beneficiaryCount = profiles.filter((profile) => profile.role === "beneficiary").length;
+  const merchantCount = profiles.filter((profile) => profile.role === "merchant").length;
+  const activeProgramsCount = programs.filter(
+    (program) => program.status === "active" || program.status === "funding",
+  ).length;
+
   return {
-    organizations: profiles.filter((profile) => profile.role === "lgu").length,
-    beneficiaries: profiles.filter((profile) => profile.role === "beneficiary").length,
-    merchants: profiles.filter((profile) => profile.role === "merchant").length,
-    activePrograms: programs.filter((program) => program.status === "active").length,
+    organizations: lguCount,
+    beneficiaries: beneficiaryCount,
+    merchants: merchantCount,
+    activePrograms: activeProgramsCount,
     pendingRegistrations: registrations.filter(
       (registration) => registration.status === "Pending",
     ).length,
@@ -60,7 +76,7 @@ const DISBURSEMENT_HISTORY_MONTHS = 12;
 
 export async function getMonthlyDisbursements(): Promise<MonthlyDisbursement[]> {
   await requireSuperAdmin();
-  const supabase = await createServerSupabaseClient();
+  const supabase = await getClient();
 
   const { data } = await supabase
     .from("disbursements")
@@ -75,9 +91,7 @@ export async function getMonthlyDisbursements(): Promise<MonthlyDisbursement[]> 
     totalsByMonth.set(key, (totalsByMonth.get(key) ?? 0) + Number(row.amount ?? 0));
   }
 
-  // Always return a trailing 12-month window so the chart has a stable shape
-  // even in a freshly seeded environment with sparse data. The client-side
-  // chart filters this down to a shorter range without an extra round trip.
+  // Trailing 12-month window
   const now = new Date();
   const months: MonthlyDisbursement[] = [];
   for (let offset = DISBURSEMENT_HISTORY_MONTHS - 1; offset >= 0; offset -= 1) {
@@ -94,21 +108,27 @@ export async function getMonthlyDisbursements(): Promise<MonthlyDisbursement[]> 
 
 export async function getRoleBreakdown(): Promise<RoleBreakdownEntry[]> {
   await requireSuperAdmin();
-  const supabase = await createServerSupabaseClient();
+  const supabase = await getClient();
 
-  const { data } = await supabase.from("profiles").select("role");
-  const profiles = data ?? [];
+  const [profilesRes, registrationsRes] = await Promise.all([
+    supabase.from("profiles").select("role"),
+    supabase.from("registrations").select("id"),
+  ]);
 
-  const counts = {
-    lgu: profiles.filter((profile) => profile.role === "lgu").length,
-    beneficiary: profiles.filter((profile) => profile.role === "beneficiary").length,
-    merchant: profiles.filter((profile) => profile.role === "merchant").length,
-  };
+  const profiles = profilesRes.data ?? [];
+  const registrations = registrationsRes.data ?? [];
+
+  const lguCount = Math.max(
+    profiles.filter((profile) => profile.role === "lgu").length,
+    registrations.length,
+  );
+  const beneficiaryCount = profiles.filter((profile) => profile.role === "beneficiary").length;
+  const merchantCount = profiles.filter((profile) => profile.role === "merchant").length;
 
   return [
-    { role: "lgu", label: "Organizations", count: counts.lgu },
-    { role: "beneficiary", label: "Beneficiaries", count: counts.beneficiary },
-    { role: "merchant", label: "Merchants", count: counts.merchant },
+    { role: "lgu", label: "Organizations", count: lguCount },
+    { role: "beneficiary", label: "Beneficiaries", count: beneficiaryCount },
+    { role: "merchant", label: "Merchants", count: merchantCount },
   ];
 }
 
@@ -125,12 +145,12 @@ function timeAgo(isoDate: string): string {
 
 export async function getRecentActivity(): Promise<ActivityEvent[]> {
   await requireSuperAdmin();
-  const supabase = await createServerSupabaseClient();
+  const supabase = await getClient();
 
   const { data } = await supabase
     .from("registrations")
     .select("id, organization_name, status, created_at, updated_at")
-    .order("updated_at", { ascending: false })
+    .order("created_at", { ascending: false })
     .limit(5);
 
   return (data ?? []).map((row) => {

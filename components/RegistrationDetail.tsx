@@ -11,18 +11,26 @@ type RejectAction = (
 ) => Promise<MutationResult>;
 type DocumentUrlResult = { url: string } | { error: string };
 type GetDocumentUrlAction = (documentReference: string) => Promise<DocumentUrlResult>;
+type SuspendAction = (id: string, reason: string) => Promise<MutationResult>;
+type ReactivateAction = (id: string) => Promise<MutationResult>;
+type DeactivateAction = (id: string, reason: string) => Promise<MutationResult>;
 
 type RegistrationDetailProps = {
   registration: Registration;
   approveAction?: ApproveAction;
   rejectAction?: RejectAction;
   getDocumentUrlAction?: GetDocumentUrlAction;
+  suspendAction?: SuspendAction;
+  reactivateAction?: ReactivateAction;
+  deactivateAction?: DeactivateAction;
 };
 
-const statusStyles: Record<Registration["status"], string> = {
+const statusStyles: Record<string, string> = {
   Pending: "bg-accent/20 text-dark",
   Approved: "bg-primary/20 text-secondary",
   Rejected: "bg-red-100 text-red-800",
+  Suspended: "bg-amber-100 text-amber-800",
+  Deactivated: "bg-dark/10 text-dark/60",
 };
 
 function DetailField({
@@ -47,6 +55,9 @@ export default function RegistrationDetail({
   approveAction,
   rejectAction,
   getDocumentUrlAction,
+  suspendAction,
+  reactivateAction,
+  deactivateAction,
 }: RegistrationDetailProps) {
   const representativeName = [
     registration.representative.firstName,
@@ -55,6 +66,14 @@ export default function RegistrationDetail({
   ]
     .filter(Boolean)
     .join(" ");
+
+  const statusStyle = statusStyles[registration.status] ?? "bg-dark/10 text-dark/60";
+
+  const showOrgActions =
+    suspendAction &&
+    reactivateAction &&
+    deactivateAction &&
+    (registration.status === "Approved" || registration.status === "Suspended");
 
   return (
     <article
@@ -74,7 +93,7 @@ export default function RegistrationDetail({
           </h1>
         </div>
         <span
-          className={`w-fit rounded-full px-3 py-1 text-sm font-semibold ${statusStyles[registration.status]}`}
+          className={`w-fit rounded-full px-3 py-1 text-sm font-semibold ${statusStyle}`}
         >
           <span className="sr-only">Registration status: </span>
           {registration.status}
@@ -104,6 +123,23 @@ export default function RegistrationDetail({
         </div>
       </dl>
 
+      {registration.status === "Suspended" && registration.suspensionReason ? (
+        <section
+          aria-labelledby="suspension-reason-title"
+          className="rounded-xl border border-amber-200 bg-amber-50 p-5"
+        >
+          <h2
+            id="suspension-reason-title"
+            className="text-sm font-semibold uppercase tracking-wide text-amber-800"
+          >
+            Suspension reason
+          </h2>
+          <p className="mt-2 text-amber-950">
+            {registration.suspensionReason}
+          </p>
+        </section>
+      ) : null}
+
       {registration.status === "Rejected" ? (
         <section
           aria-labelledby="rejection-reason-title"
@@ -132,12 +168,61 @@ export default function RegistrationDetail({
             status={registration.status}
           />
           <RejectDialog
+            organizationName={registration.organizationName}
             rejectAction={rejectAction}
             registrationId={registration.id}
             status={registration.status}
           />
         </div>
       ) : null}
+
+      {showOrgActions ? (
+        <div className="border-t border-dark/10 pt-6">
+          <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-dark/50">
+            Access Control
+          </p>
+          {/* Dynamically import client component to avoid hydration issues */}
+          <OrgActionButtons
+            registrationId={registration.id}
+            organizationName={registration.organizationName}
+            currentStatus={registration.status}
+            suspendAction={suspendAction!}
+            reactivateAction={reactivateAction!}
+            deactivateAction={deactivateAction!}
+          />
+        </div>
+      ) : null}
     </article>
+  );
+}
+
+// Inline wrapper — OrgActionDialog is a client component, RegistrationDetail is a server component
+// We import it here so we can pass server-bound actions through
+import OrgActionDialog from "@/components/dashboard/OrgActionDialog";
+
+function OrgActionButtons({
+  registrationId,
+  organizationName,
+  currentStatus,
+  suspendAction,
+  reactivateAction,
+  deactivateAction,
+}: {
+  registrationId: string;
+  organizationName: string;
+  currentStatus: string;
+  suspendAction: SuspendAction;
+  reactivateAction: ReactivateAction;
+  deactivateAction: DeactivateAction;
+}) {
+  return (
+    <OrgActionDialog
+      registrationId={registrationId}
+      organizationName={organizationName}
+      currentStatus={currentStatus}
+      suspendAction={suspendAction}
+      reactivateAction={reactivateAction}
+      deactivateAction={deactivateAction}
+    />
   );
 }

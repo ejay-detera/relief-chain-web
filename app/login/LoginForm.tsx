@@ -96,63 +96,65 @@ export default function LoginForm({ initialAuthError }: LoginFormProps) {
   }
 
   return (
-    <form action={formAction} className="space-y-5" noValidate onSubmit={handleSubmit}>
+    <form action={formAction} className="space-y-4" noValidate onSubmit={handleSubmit}>
       {authError ? (
         <p
           aria-live="polite"
-          className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+          className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-xs sm:text-sm text-red-700 font-medium"
           role="alert"
         >
           {authError}
         </p>
       ) : null}
 
-      <div className="space-y-2">
-        <label className="block text-sm font-semibold text-secondary" htmlFor="email">
+      <div className="space-y-1.5">
+        <label className="block text-xs sm:text-sm font-semibold text-secondary" htmlFor="email">
           Email address
         </label>
         <input
           aria-describedby={emailError ? "email-error" : undefined}
           aria-invalid={Boolean(emailError)}
           autoComplete="email"
-          className="w-full rounded-lg border border-secondary/20 bg-white px-4 py-3 text-dark outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30 aria-[invalid=true]:border-red-500"
+          className="w-full rounded-xl border border-secondary/20 bg-muted/20 px-4 py-3 text-sm text-dark placeholder:text-dark/40 outline-none transition focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/30 aria-[invalid=true]:border-red-500"
           id="email"
           name="email"
           onChange={(event) => handleEmailChange(event.target.value)}
+          placeholder="superadmin@reliefchain.app"
           type="email"
           value={email}
         />
         {emailError ? (
-          <p className="text-sm text-red-600" id="email-error">
+          <p className="text-xs text-red-600 font-medium" id="email-error">
             {emailError}
           </p>
         ) : null}
       </div>
 
-      <div className="space-y-2">
-        <label className="block text-sm font-semibold text-secondary" htmlFor="password">
+      <div className="space-y-1.5">
+        <label className="block text-xs sm:text-sm font-semibold text-secondary" htmlFor="password">
           Password
         </label>
         <input
           aria-describedby={passwordError ? "password-error" : undefined}
           aria-invalid={Boolean(passwordError)}
           autoComplete="current-password"
-          className="w-full rounded-lg border border-secondary/20 bg-white px-4 py-3 text-dark outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30 aria-[invalid=true]:border-red-500"
+          className="w-full rounded-xl border border-secondary/20 bg-muted/20 px-4 py-3 text-sm text-dark placeholder:text-dark/40 outline-none transition focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/30 aria-[invalid=true]:border-red-500"
           id="password"
           name="password"
           onChange={(event) => handlePasswordChange(event.target.value)}
+          placeholder="••••••••••••"
           type="password"
           value={password}
         />
         {passwordError ? (
-          <p className="text-sm text-red-600" id="password-error">
+          <p className="text-xs text-red-600 font-medium" id="password-error">
             {passwordError}
           </p>
         ) : null}
       </div>
 
       <button
-        className="w-full rounded-lg bg-primary px-4 py-3 font-semibold text-secondary transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+        className="w-full rounded-xl bg-primary px-4 py-3.5 text-sm sm:text-base font-bold text-secondary shadow-md shadow-primary/20 transition hover:bg-primary/90 hover:scale-[1.01] active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-60 cursor-pointer"
         disabled={pending}
         type="submit"
       >

@@ -1,5 +1,7 @@
 import DashboardLoadError from "@/components/DashboardLoadError";
+import DynamicMain from "@/components/dashboard/DynamicMain";
 import Sidebar from "@/components/dashboard/Sidebar";
+import { SidebarProvider } from "@/components/dashboard/SidebarProvider";
 import Topbar from "@/components/dashboard/Topbar";
 import {
   requireSuperAdmin,
@@ -23,13 +25,13 @@ function DashboardShell({
   session: SuperAdminSession;
 }>) {
   return (
-    <div className="flex min-h-full flex-1 bg-muted font-sans">
-      <Sidebar />
-      <Topbar email={session.email} />
-      <main className="ml-64 mt-16 min-h-screen w-[calc(100%-16rem)] flex-1 p-6">
-        {children}
-      </main>
-    </div>
+    <SidebarProvider>
+      <div className="flex min-h-full flex-1 bg-muted font-sans">
+        <Sidebar />
+        <Topbar email={session.email} />
+        <DynamicMain>{children}</DynamicMain>
+      </div>
+    </SidebarProvider>
   );
 }
 

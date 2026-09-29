@@ -2,9 +2,9 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 const signOutAction = vi.hoisted(() => vi.fn());
-vi.mock("@/app/dashboard/actions", () => ({ signOutAction }));
+vi.mock("@/app/(dashboard)/actions", () => ({ signOutAction }));
 
-import DashboardError from "@/app/dashboard/error";
+import DashboardError from "@/app/(dashboard)/error";
 import DashboardLoadError from "@/components/DashboardLoadError";
 
 describe("dashboard load failure UI", () => {

@@ -50,7 +50,7 @@ describe("RegistrationList", () => {
         for (const registration of registrations) {
           const row = container
             .querySelector<HTMLAnchorElement>(
-              `a[href="/dashboard/organizations/${registration.id}"]`,
+              `a[href="/organizations/${registration.id}"]`,
             )
             ?.closest("tr");
           expect(row).not.toBeNull();
@@ -74,7 +74,7 @@ describe("RegistrationList detail selection", () => {
     fc.assert(
       fc.property(registrationSelectionArbitrary, ({ registrations, selected }) => {
         const { container } = render(<RegistrationList registrations={registrations} />);
-        const expectedHref = `/dashboard/organizations/${selected.id}`;
+        const expectedHref = `/organizations/${selected.id}`;
         const matchingLinks = [...container.querySelectorAll<HTMLAnchorElement>("a")].filter(
           (link) => link.getAttribute("href") === expectedHref,
         );

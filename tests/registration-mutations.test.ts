@@ -21,7 +21,7 @@ import {
   approveRegistration,
   rejectRegistration,
 } from "@/lib/registrations/mutations";
-import { rejectRegistrationAction } from "@/app/dashboard/organizations/[registrationId]/actions";
+import { rejectRegistrationAction } from "@/app/(dashboard)/organizations/[registrationId]/actions";
 
 function createMutationQuery(result: { error: Error | null }) {
   const query = {
@@ -63,6 +63,10 @@ describe("registration mutations", () => {
     expect(query.eq).toHaveBeenNthCalledWith(1, "id", "registration-1");
     expect(query.eq).toHaveBeenNthCalledWith(2, "status", "Pending");
     expect(mocks.revalidatePath).toHaveBeenCalledWith("/dashboard");
+    expect(mocks.revalidatePath).toHaveBeenCalledWith("/organizations");
+    expect(mocks.revalidatePath).toHaveBeenCalledWith(
+      "/organizations/registration-1",
+    );
     expect(mocks.revalidatePath).toHaveBeenCalledWith("/dashboard/organizations");
     expect(mocks.revalidatePath).toHaveBeenCalledWith(
       "/dashboard/organizations/registration-1",
@@ -96,6 +100,10 @@ describe("registration mutations", () => {
     expect(query.eq).toHaveBeenNthCalledWith(1, "id", "registration-1");
     expect(query.eq).toHaveBeenNthCalledWith(2, "status", "Pending");
     expect(mocks.revalidatePath).toHaveBeenCalledWith("/dashboard");
+    expect(mocks.revalidatePath).toHaveBeenCalledWith("/organizations");
+    expect(mocks.revalidatePath).toHaveBeenCalledWith(
+      "/organizations/registration-1",
+    );
     expect(mocks.revalidatePath).toHaveBeenCalledWith("/dashboard/organizations");
     expect(mocks.revalidatePath).toHaveBeenCalledWith(
       "/dashboard/organizations/registration-1",

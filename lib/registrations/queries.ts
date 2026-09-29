@@ -16,6 +16,7 @@ type RegistrationRow = {
   document_reference: string;
   status: Registration["status"];
   rejection_reason: string | null;
+  suspension_reason?: string | null;
   created_at: string;
 };
 
@@ -34,6 +35,7 @@ function toRegistration(row: RegistrationRow): Registration {
     documentReference: row.document_reference,
     status: row.status,
     rejectionReason: row.rejection_reason,
+    suspensionReason: row.suspension_reason ?? null,
     createdAt: row.created_at,
   };
 }
@@ -45,7 +47,7 @@ export async function listRegistrations(): Promise<Registration[]> {
   const { data, error } = await supabase
     .from("registrations")
     .select(
-      "id, organization_name, organization_type, contact_info, representative_first_name, representative_last_name, representative_middle_initial, representative_position, document_reference, status, rejection_reason, created_at",
+      "id, organization_name, organization_type, contact_info, representative_first_name, representative_last_name, representative_middle_initial, representative_position, document_reference, status, rejection_reason, suspension_reason, created_at",
     )
     .order("created_at", { ascending: false });
 
@@ -63,7 +65,7 @@ export async function getRegistration(id: string): Promise<Registration | null> 
   const { data, error } = await supabase
     .from("registrations")
     .select(
-      "id, organization_name, organization_type, contact_info, representative_first_name, representative_last_name, representative_middle_initial, representative_position, document_reference, status, rejection_reason, created_at",
+      "id, organization_name, organization_type, contact_info, representative_first_name, representative_last_name, representative_middle_initial, representative_position, document_reference, status, rejection_reason, suspension_reason, created_at",
     )
     .eq("id", id)
     .maybeSingle();

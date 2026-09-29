@@ -1,5 +1,7 @@
+import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Lock, ArrowLeft, ShieldCheck } from "lucide-react";
 
 import LoginForm from "@/app/login/LoginForm";
 import Grainient from "@/components/Grainient";
@@ -31,7 +33,8 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const { error } = await searchParams;
 
   return (
-    <main className="relative isolate flex min-h-full flex-1 items-center justify-center overflow-hidden px-6 py-12 font-sans">
+    <main className="relative isolate flex min-h-screen flex-1 items-center justify-center overflow-hidden px-6 py-12 font-sans">
+      {/* Background with original Grainient and bg-secondary/35 overlay */}
       <div className="absolute inset-0 -z-10">
         <Grainient
           color1="#6FCA4B"
@@ -56,36 +59,56 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         <div className="absolute inset-0 bg-secondary/35" />
       </div>
 
+      {/* Frosted Back Button */}
       <Link
-        className="absolute left-6 top-6 flex items-center gap-2 rounded-lg bg-white/90 px-4 py-2 text-sm font-semibold text-secondary shadow-sm transition hover:bg-white focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 sm:left-12 sm:top-8"
+        className="absolute left-6 top-6 flex items-center gap-2 rounded-xl bg-white/90 px-4 py-2.5 text-xs sm:text-sm font-semibold text-secondary shadow-md backdrop-blur-md transition hover:bg-white hover:scale-105 focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 sm:left-12 sm:top-8 border border-white/40"
         href="/"
       >
-        <svg
-          aria-hidden="true"
-          className="h-4 w-4"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2}
-          viewBox="0 0 24 24"
-        >
-          <path d="M15 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-        Back
+        <ArrowLeft className="h-4 w-4" />
+        <span>Back to Welcome</span>
       </Link>
 
-      <section className="animate-fade-in-up w-full max-w-md rounded-2xl bg-white p-8 shadow-xl shadow-secondary/10 sm:p-10">
-        <div className="mb-8 space-y-3">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">
+      {/* Revamped High-End Login Card */}
+      <section className="animate-fade-in-up relative w-full max-w-md rounded-3xl bg-white/95 p-8 shadow-2xl backdrop-blur-xl sm:p-10 border border-white/50">
+        {/* Top Header Badge Strip */}
+        <div className="mb-6 flex items-center justify-between border-b border-secondary/10 pb-4">
+          <Image
+            src="/assets/Logo.svg"
+            alt="Relief Chain"
+            width={120}
+            height={60}
+            priority
+            className="h-8 w-auto"
+          />
+          <div className="flex items-center gap-1.5 rounded-full bg-secondary/10 px-3 py-1 text-[11px] font-bold text-secondary">
+            <ShieldCheck className="h-3.5 w-3.5 text-primary" />
+            <span>Institutional Access</span>
+          </div>
+        </div>
+
+        {/* Title & Description */}
+        <div className="mb-6 space-y-1.5">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">
             Relief Chain
           </p>
-          <h1 className="text-3xl font-bold tracking-tight text-secondary">
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-secondary">
             Super Admin login
           </h1>
-          <p className="text-sm leading-6 text-dark/70">
+          <p className="text-xs sm:text-sm leading-relaxed text-dark/70">
             Sign in to review and manage organization registrations.
           </p>
         </div>
+
+        {/* Interactive Form Component */}
         <LoginForm initialAuthError={getAccessError(error)} />
+
+        {/* Security Notice */}
+        <div className="mt-6 flex items-center gap-2 rounded-xl bg-muted/40 p-3 text-center border border-secondary/10">
+          <Lock className="h-3.5 w-3.5 shrink-0 text-secondary" />
+          <p className="text-[11px] leading-tight text-dark/70">
+            Super Admin portal is strictly restricted to accredited disaster oversight officers.
+          </p>
+        </div>
       </section>
     </main>
   );

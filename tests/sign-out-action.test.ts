@@ -10,7 +10,7 @@ vi.mock("@/lib/supabase/server", () => ({
 }));
 vi.mock("next/navigation", () => ({ redirect: mocks.redirect }));
 
-import { signOutAction } from "@/app/dashboard/actions";
+import { signOutAction } from "@/app/(dashboard)/actions";
 
 describe("signOutAction", () => {
   beforeEach(() => {

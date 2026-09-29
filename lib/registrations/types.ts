@@ -1,4 +1,4 @@
-export type RegistrationStatus = "Pending" | "Approved" | "Rejected";
+export type RegistrationStatus = "Pending" | "Approved" | "Rejected" | "Suspended" | "Deactivated";
 
 export type Registration = {
   id: string;
@@ -14,5 +14,6 @@ export type Registration = {
   documentReference: string;
   status: RegistrationStatus;
   rejectionReason: string | null;
+  suspensionReason?: string | null;
   createdAt: string;
 };

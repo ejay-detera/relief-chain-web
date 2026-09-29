@@ -71,9 +71,33 @@ body {
   animation-delay: 0.45s;
 }
 
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 5s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float 6s ease-in-out 2s infinite;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-in-up,
-  .animate-fade-in {
+  .animate-fade-in,
+  .animate-float,
+  .animate-float-delayed {
     animation: none;
   }
 }
+
